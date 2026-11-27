@@ -79,7 +79,19 @@ jobs:
       with:
         location: ${{env.MSYS}}
         msystem: mingw64
-        install: mingw-w64-x86_64-openssl openssl-devel base-devel mingw-w64-x86_64-gcc
+        install: mingw-w64-x86_64-openssl
+
+    - name: Stage OpenSSL without MinGW headers
+      if: matrix.os == 'windows'
+      shell: pwsh
+      run: |
+        $source = "${{env.MSYS}}\\msys64\\mingw64"
+        $target = "D:\\openssl"
+        New-Item -ItemType Directory -Force -Path "$target\\include", "$target\\lib", "$target\\bin" | Out-Null
+        Copy-Item "$source\\include\\openssl" "$target\\include\\openssl" -Recurse -Force
+        Copy-Item "$source\\lib\\*.dll.a" "$target\\lib" -Force
+        Copy-Item "$source\\lib\\*.a" "$target\\lib" -Force
+        Copy-Item "$source\\bin\\libcrypto-3-x64.dll", "$source\\bin\\libssl-3-x64.dll" "$target\\bin" -Force
 
     - name: Brew install OpenSSL
       if: matrix.os == 'macos'
@@ -126,7 +138,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         cmake --build ${{github.workspace}}/build -t tests
-        ctest --test-dir ${{github.workspace}}/build -L console
+        ctest --test-dir ${{github.workspace}}/build -L console --output-on-failure
 
     - name: Install
       if: matrix.os != 'windows'
