@@ -107,15 +107,15 @@ jobs:
       if: matrix.os == 'windows'
       shell: pwsh
       run: |
-        $archive = Get-ChildItem "${{github.workspace}}\\build" -Filter "xca-portable-*.zip" | Select-Object -First 1
+        $archive = Get-ChildItem "${{github.workspace}}/build" -Filter "xca-portable-*.zip" | Select-Object -First 1
         if (-not $archive) { throw "Portable ZIP was not created" }
-        $verifyDir = "${{github.workspace}}\\build\\portable-verify"
+        $verifyDir = "${{github.workspace}}/build\\portable-verify"
         Expand-Archive -LiteralPath $archive.FullName -DestinationPath $verifyDir -Force
         $exe = Get-ChildItem $verifyDir -Recurse -Filter "xca.exe" | Select-Object -First 1
         if (-not $exe) { throw "xca.exe is missing from portable ZIP" }
         $root = $exe.Directory.FullName
         $qtMajor = "${{matrix.qt}}".Split('.')[0]
-        foreach ($required in @("Qt${qtMajor}Core.dll", "libcrypto-3-x64.dll", "platforms\\qwindows.dll", "sqldrivers\\qsqlite.dll")) {
+        foreach ($required in @("Qt${qtMajor}Core.dll", "libcrypto-3-x64.dll", "platforms/qwindows.dll", "sqldrivers/qsqlite.dll")) {
           if (-not (Test-Path (Join-Path $root $required))) { throw "Required portable dependency missing: $required" }
         }
 
