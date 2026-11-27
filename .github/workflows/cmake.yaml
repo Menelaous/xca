@@ -70,7 +70,8 @@ jobs:
       with:
         arch: ${{matrix.winarch}}
         version: ${{matrix.qt}}
-        aqtversion: "==3.3.*"
+        # Qt 6.11+ changed the Windows repository layout; use the merged aqt fix.
+        aqtsource: "git+https://github.com/miurahr/aqtinstall.git@8c3695d4a4e1ceabf6a74dc6c79681656dc6b74b"
 
     - name: Install MSYS2 and OpenSSL on Windows
       uses: msys2/setup-msys2@v2
