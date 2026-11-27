@@ -89,7 +89,7 @@ jobs:
         # OpenSSL 3 MinGW package so the ABI and DLL names remain predictable.
         pacman -U --noconfirm https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-openssl-3.6.5-1-any.pkg.tar.zst
         openssl version
-        openssl version | grep -E '^OpenSSL 3\\.'
+        openssl version | grep -E '^OpenSSL 3[.]'
 
     - name: Stage OpenSSL without MinGW headers
       if: matrix.os == 'windows'
