@@ -307,10 +307,13 @@ elseif(WIN32)
     message(FATAL_ERROR "Qt SQLite driver plugin qsqlite.dll was not found")
   endif()
   install(FILES ${QSQLITE_PLUGIN} DESTINATION ${RUNTIME_DEST}/sqldrivers)
-  # Deploy every Qt runtime DLL copied by windeployqt. The exact set varies
-  # between Qt 5 and Qt 6 (for example Qt6Network.dll may be required by QtHelp).
-  file(GLOB QT_RUNTIME_DLLS "${CMAKE_BINARY_DIR}/${QT}*.dll")
-  install(FILES ${QT_RUNTIME_DLLS}
+  # windeployqt creates these DLLs after CMake configuration, so collect
+  # them at install time rather than with configure-time file(GLOB).
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/
+      DESTINATION ${RUNTIME_DEST}
+      FILES_MATCHING PATTERN "${QT}*.dll"
+  )
+  install(FILES
         ${CMAKE_BINARY_DIR}/libgcc_s_seh-1.dll
         ${CMAKE_BINARY_DIR}/libstdc++-6.dll
         ${CMAKE_BINARY_DIR}/libwinpthread-1.dll
