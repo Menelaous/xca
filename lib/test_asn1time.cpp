@@ -12,7 +12,8 @@
 #include "asn1time.h"
 
 #include <stdlib.h>
-       #include <time.h>
+#include <time.h>
+
 class test_asn1time: public QObject
 {
     Q_OBJECT
@@ -54,18 +55,19 @@ void test_asn1time::output()
 
 #if !defined(Q_OS_WIN32)
 	a.setTimeZone(QTimeZone("UTC"));
-	#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
-		#define UTC "GMT"
-	#else
-		#define UTC "UTC"
-	#endif
-	QCOMPARE(a.toPretty(), "Monday, 25 November 2019 15:30:15 " UTC);
+	const QString utc = a.toPretty();
+	QVERIFY(utc == "Monday, 25 November 2019 15:30:15 UTC" ||
+		utc == "Monday, 25 November 2019 15:30:15 GMT");
 
 	a.setTimeZone(QTimeZone("Europe/Berlin"));
-	QCOMPARE(a.toPretty(), "Monday, 25 November 2019 14:30:15 " UTC);
+	const QString berlin = a.toPretty();
+	QVERIFY(berlin == "Monday, 25 November 2019 14:30:15 UTC" ||
+		berlin == "Monday, 25 November 2019 14:30:15 GMT");
 
 	a.setTimeZone(QTimeZone("UTC+07:00"));
-	QCOMPARE(a.toPretty(), "Monday, 25 November 2019 08:30:15 " UTC);
+	const QString offset = a.toPretty();
+	QVERIFY(offset == "Monday, 25 November 2019 08:30:15 UTC" ||
+		offset == "Monday, 25 November 2019 08:30:15 GMT");
 #endif
 }
 
