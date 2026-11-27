@@ -137,3 +137,8 @@ They should pull in all necessary dependencies.
 - **ODBC**: Use the `ODBC Datasources 64bit app` to configure the SQL Server
 - **MariaDB (MySQL)**: Install the Plugin from here: https://github.com/thecodemonkey86/qt_mysql_driver.
   Select the MinGW variant and install it as documented.
+
+
+## Windows portable modernization branch
+
+The `modernization/qt6-windows11-portable` branch tests separate Qt 5.15.2 and Qt 6.12.1 Windows builds and validates the generated portable ZIP package in GitHub Actions. The upstream `chris2511/xca` repository is not modified.
