@@ -109,7 +109,7 @@ jobs:
       run: |
         $archive = Get-ChildItem "${{github.workspace}}/build" -Filter "xca-portable-*.zip" | Select-Object -First 1
         if (-not $archive) { throw "Portable ZIP was not created" }
-        $verifyDir = "${{github.workspace}}/build\\portable-verify"
+        $verifyDir = "${{github.workspace}}/build/portable-verify"
         Expand-Archive -LiteralPath $archive.FullName -DestinationPath $verifyDir -Force
         $exe = Get-ChildItem $verifyDir -Recurse -Filter "xca.exe" | Select-Object -First 1
         if (-not $exe) { throw "xca.exe is missing from portable ZIP" }
