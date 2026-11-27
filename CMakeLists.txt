@@ -297,6 +297,15 @@ elseif(WIN32)
       DESTINATION ${RUNTIME_DEST}
       OPTIONAL
   )
+  # The SQLite driver is loaded dynamically and may not be discovered by
+  # windeployqt when scanning the executable.
+  find_file(QSQLITE_PLUGIN qsqlite.dll
+      PATHS "${_qt_bin_dir}/../plugins/sqldrivers"
+      NO_DEFAULT_PATH
+  )
+  if (QSQLITE_PLUGIN)
+    install(FILES ${QSQLITE_PLUGIN} DESTINATION ${RUNTIME_DEST}/sqldrivers)
+  endif()
   # Deploy every Qt runtime DLL copied by windeployqt. The exact set varies
   # between Qt 5 and Qt 6 (for example Qt6Network.dll may be required by QtHelp).
   file(GLOB QT_RUNTIME_DLLS "${CMAKE_BINARY_DIR}/${QT}*.dll")
