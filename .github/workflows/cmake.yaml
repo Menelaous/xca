@@ -9,10 +9,11 @@ env:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
 
         os: [ ubuntu, macos, windows ]
-        qt: [ "5.15.2", "6.6.2" ]
+        qt: [ "5.15.2", "6.12.1" ]
 
         include:
         - os: ubuntu
@@ -42,10 +43,12 @@ jobs:
           winarch: win64_mingw81
           runs: windows-2019
 
-        exclude:
         - os: windows
-          qt: "6.6.2"
+          qt: "6.12.1"
+          winarch: win64_mingw
+          runs: windows-2022
 
+        exclude:
         - os: macos
           qt: "5.15.2"
 
