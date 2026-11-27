@@ -32,7 +32,7 @@ jobs:
 
         - os: windows
           generator: MinGW Makefiles
-          openssl_root: D:\msys2\msys64\mingw64
+          openssl_root: D:\openssl
           artifact: |
              build/xca-*.msi
              build/xca-portable-*.zip
@@ -85,13 +85,13 @@ jobs:
       if: matrix.os == 'windows'
       shell: pwsh
       run: |
-        $source = "${{env.MSYS}}\\msys64\\mingw64"
-        $target = "D:\\openssl"
-        New-Item -ItemType Directory -Force -Path "$target\\include", "$target\\lib", "$target\\bin" | Out-Null
-        Copy-Item "$source\\include\\openssl" "$target\\include\\openssl" -Recurse -Force
-        Copy-Item "$source\\lib\\*.dll.a" "$target\\lib" -Force
-        Copy-Item "$source\\lib\\*.a" "$target\\lib" -Force
-        Copy-Item "$source\\bin\\libcrypto-3-x64.dll", "$source\\bin\\libssl-3-x64.dll" "$target\\bin" -Force
+        $source = "${{env.MSYS}}\msys64\mingw64"
+        $target = "D:\openssl"
+        New-Item -ItemType Directory -Force -Path "$target\include", "$target\lib", "$target\bin" | Out-Null
+        Copy-Item "$source\include\openssl" "$target\include\openssl" -Recurse -Force
+        Copy-Item "$source\lib\*.dll.a" "$target\lib" -Force
+        Copy-Item "$source\lib\*.a" "$target\lib" -Force
+        Copy-Item "$source\bin\libcrypto-3-x64.dll", "$source\bin\libssl-3-x64.dll" "$target\bin" -Force
 
     - name: Brew install OpenSSL
       if: matrix.os == 'macos'
@@ -113,7 +113,7 @@ jobs:
     - name: Fixup after WindeployQT and Install
       if: matrix.os == 'windows'
       run: |
-        cd ${{env.MSYS}}\msys64\mingw64\bin
+        cd C:\mingw64\bin
         cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}\build
         cmake --build ${{github.workspace}}/build -t install
 
