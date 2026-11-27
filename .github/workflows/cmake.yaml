@@ -66,10 +66,11 @@ jobs:
         pip install sphinx
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4.5.0
       with:
         arch: ${{matrix.winarch}}
         version: ${{matrix.qt}}
+        aqtversion: "==3.3.*"
 
     - name: Install MSYS2 and OpenSSL on Windows
       uses: msys2/setup-msys2@v2
