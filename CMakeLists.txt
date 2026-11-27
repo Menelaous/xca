@@ -303,9 +303,10 @@ elseif(WIN32)
       PATHS "${_qt_bin_dir}/../plugins/sqldrivers"
       NO_DEFAULT_PATH
   )
-  if (QSQLITE_PLUGIN)
-    install(FILES ${QSQLITE_PLUGIN} DESTINATION ${RUNTIME_DEST}/sqldrivers)
+  if (NOT QSQLITE_PLUGIN)
+    message(FATAL_ERROR "Qt SQLite driver plugin qsqlite.dll was not found")
   endif()
+  install(FILES ${QSQLITE_PLUGIN} DESTINATION ${RUNTIME_DEST}/sqldrivers)
   # Deploy every Qt runtime DLL copied by windeployqt. The exact set varies
   # between Qt 5 and Qt 6 (for example Qt6Network.dll may be required by QtHelp).
   file(GLOB QT_RUNTIME_DLLS "${CMAKE_BINARY_DIR}/${QT}*.dll")
