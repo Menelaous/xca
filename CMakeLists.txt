@@ -253,9 +253,13 @@ if(APPLE)
 
 elseif(WIN32)
   find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS ${_qt_bin_dir})
+  if (${QT_VERSION} VERSION_GREATER_EQUAL 6.0.0)
+    set(WINDEPLOYQT_EXTRA_ARGS --add-plugin-types sqldrivers)
+  endif()
   add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${WINDEPLOYQT_EXECUTABLE} $<TARGET_FILE:${PROJECT_NAME}>
         --dir ${CMAKE_BINARY_DIR} --compiler-runtime --no-translations
+        ${WINDEPLOYQT_EXTRA_ARGS}
     COMMENT "Running windeployqt on ${CMAKE_PROJECT_NAME} ..."
   )
   add_custom_command(TARGET xcadoc POST_BUILD
@@ -287,13 +291,16 @@ elseif(WIN32)
       ${CMAKE_BINARY_DIR}/platforms
       ${CMAKE_BINARY_DIR}/sqldrivers
       ${CMAKE_BINARY_DIR}/styles
+      ${CMAKE_BINARY_DIR}/imageformats
+      ${CMAKE_BINARY_DIR}/iconengines
+      ${CMAKE_BINARY_DIR}/tls
       DESTINATION ${RUNTIME_DEST}
+      OPTIONAL
   )
-  install(FILES ${CMAKE_BINARY_DIR}/${QT}Core.dll
-        ${CMAKE_BINARY_DIR}/${QT}Gui.dll
-        ${CMAKE_BINARY_DIR}/${QT}Help.dll
-        ${CMAKE_BINARY_DIR}/${QT}Sql.dll
-        ${CMAKE_BINARY_DIR}/${QT}Widgets.dll
+  # Deploy every Qt runtime DLL copied by windeployqt. The exact set varies
+  # between Qt 5 and Qt 6 (for example Qt6Network.dll may be required by QtHelp).
+  file(GLOB QT_RUNTIME_DLLS "${CMAKE_BINARY_DIR}/${QT}*.dll")
+  install(FILES ${QT_RUNTIME_DLLS}
         ${CMAKE_BINARY_DIR}/libgcc_s_seh-1.dll
         ${CMAKE_BINARY_DIR}/libstdc++-6.dll
         ${CMAKE_BINARY_DIR}/libwinpthread-1.dll
