@@ -99,8 +99,8 @@ jobs:
     - name: Fixup after WindeployQT and Install
       if: matrix.os == 'windows'
       run: |
-        cd C:\\mingw64\\bin
-        cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}\\build
+        $mingwBin = "${{env.MSYS}}\\msys64\\mingw64\\bin"
+        cmake -E copy "$mingwBin\\libgcc_s_seh-1.dll" "$mingwBin\\libstdc++-6.dll" "$mingwBin\\libwinpthread-1.dll" "${{github.workspace}}\\build"
         cmake --build ${{github.workspace}}\\build -t install
 
     - name: Verify portable Windows package
