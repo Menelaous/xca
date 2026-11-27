@@ -33,9 +33,7 @@ jobs:
         - os: windows
           generator: MinGW Makefiles
           openssl_root: D:\\openssl
-          artifact: |
-             build/xca-*.msi
-             build/xca-portable-*.zip
+          artifact: build/xca-qt*-portable-*.zip
           host: windows
 
         - os: windows
@@ -131,7 +129,7 @@ jobs:
       if: matrix.os == 'windows'
       shell: pwsh
       run: |
-        $archive = Get-ChildItem "${{github.workspace}}/build" -Filter "xca-portable-*.zip" | Select-Object -First 1
+        $archive = Get-ChildItem "${{github.workspace}}/build" -Filter "xca-qt*-portable-*.zip" | Select-Object -First 1
         if (-not $archive) { throw "Portable ZIP was not created" }
         $verifyDir = "${{github.workspace}}/build/portable-verify"
         Expand-Archive -LiteralPath $archive.FullName -DestinationPath $verifyDir -Force
