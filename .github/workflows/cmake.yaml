@@ -4,7 +4,7 @@ on: [ push, pull_request, workflow_dispatch ]
 
 env:
   BUILD_TYPE: Release
-  MSYS: D:\msys2
+  MSYS: D:\\msys2
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
 
         - os: windows
           generator: MinGW Makefiles
-          openssl_root: D:\openssl
+          openssl_root: D:\\openssl
           artifact: |
              build/xca-*.msi
              build/xca-portable-*.zip
@@ -81,17 +81,27 @@ jobs:
         msystem: mingw64
         install: mingw-w64-x86_64-openssl
 
+    - name: Pin OpenSSL 3 for MinGW
+      if: matrix.os == 'windows'
+      shell: msys2 {0}
+      run: |
+        # MSYS2's rolling package can move to OpenSSL 4. Pin the last tested
+        # OpenSSL 3 MinGW package so the ABI and DLL names remain predictable.
+        pacman -U --noconfirm https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-openssl-3.6.5-1-any.pkg.tar.zst
+        openssl version
+        openssl version | grep -E '^OpenSSL 3\\.'
+
     - name: Stage OpenSSL without MinGW headers
       if: matrix.os == 'windows'
       shell: pwsh
       run: |
-        $source = "${{env.MSYS}}\msys64\mingw64"
-        $target = "D:\openssl"
-        New-Item -ItemType Directory -Force -Path "$target\include", "$target\lib", "$target\bin" | Out-Null
-        Copy-Item "$source\include\openssl" "$target\include\openssl" -Recurse -Force
-        Copy-Item "$source\lib\*.dll.a" "$target\lib" -Force
-        Copy-Item "$source\lib\*.a" "$target\lib" -Force
-        Copy-Item "$source\bin\libcrypto-3-x64.dll", "$source\bin\libssl-3-x64.dll" "$target\bin" -Force
+        $source = "${{env.MSYS}}\\msys64\\mingw64"
+        $target = "D:\\openssl"
+        New-Item -ItemType Directory -Force -Path "$target\\include", "$target\\lib", "$target\\bin" | Out-Null
+        Copy-Item "$source\\include\\openssl" "$target\\include\\openssl" -Recurse -Force
+        Copy-Item "$source\\lib\\*.dll.a" "$target\\lib" -Force
+        Copy-Item "$source\\lib\\*.a" "$target\\lib" -Force
+        Copy-Item "$source\\bin\\libcrypto-3-x64.dll", "$source\\bin\\libssl-3-x64.dll" "$target\\bin" -Force
 
     - name: Brew install OpenSSL
       if: matrix.os == 'macos'
@@ -103,7 +113,7 @@ jobs:
         fetch-depth: 0
 
     - name: Configure
-      # No YAML Multiline mechanism (>, |, \, >-, >+2 whatever) works as expected
+      # No YAML Multiline mechanism (>, |, \\, >-, >+2 whatever) works as expected
       # Give up. Live with the long line
       run: cmake -B ${{github.workspace}}/build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DOPENSSL_ROOT_DIR=${{matrix.openssl_root}} --warn-uninitialized -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
 
@@ -113,9 +123,9 @@ jobs:
     - name: Fixup after WindeployQT and Install
       if: matrix.os == 'windows'
       run: |
-        cd C:\mingw64\bin
-        cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}\build
-        cmake --build ${{github.workspace}}/build -t install
+        cd C:\\mingw64\\bin
+        cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}\\build
+        cmake --build ${{github.workspace}}\\build -t install
 
     - name: Verify portable Windows package
       if: matrix.os == 'windows'
