@@ -96,20 +96,8 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build -j 5 -v
 
-    - name: Copy MinGW runtime DLLs
-      if: matrix.os == 'windows'
-      shell: pwsh
-      run: |
-        $ErrorActionPreference = "Stop"
-        $mingwBin = Join-Path "${{env.MSYS}}" "msys64\\mingw64\\bin"
-        $buildDir = "${{github.workspace}}\\build"
-        foreach ($dll in @("libgcc_s_seh-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll")) {
-          $source = Join-Path $mingwBin $dll
-          if (-not (Test-Path -LiteralPath $source)) {
-            throw "MinGW runtime DLL not found: $source"
-          }
-          Copy-Item -LiteralPath $source -Destination $buildDir -Force
-        }
+    # windeployqt already stages the MinGW runtime DLLs beside xca.exe.
+    # Avoid copying them from a second, runner-specific toolchain path.
 
     - name: Install portable build
       if: matrix.os == 'windows'
