@@ -96,12 +96,26 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build -j 5 -v
 
-    - name: Fixup after WindeployQT and Install
+    - name: Copy MinGW runtime DLLs
       if: matrix.os == 'windows'
+      shell: pwsh
       run: |
-        $mingwBin = "${{env.MSYS}}\\msys64\\mingw64\\bin"
-        cmake -E copy "$mingwBin\\libgcc_s_seh-1.dll" "$mingwBin\\libstdc++-6.dll" "$mingwBin\\libwinpthread-1.dll" "${{github.workspace}}\\build"
-        cmake --build ${{github.workspace}}\\build -t install
+        $ErrorActionPreference = "Stop"
+        $mingwBin = Join-Path "${{env.MSYS}}" "msys64\\mingw64\\bin"
+        $buildDir = "${{github.workspace}}\\build"
+        foreach ($dll in @("libgcc_s_seh-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll")) {
+          $source = Join-Path $mingwBin $dll
+          if (-not (Test-Path -LiteralPath $source)) {
+            throw "MinGW runtime DLL not found: $source"
+          }
+          Copy-Item -LiteralPath $source -Destination $buildDir -Force
+        }
+
+    - name: Install portable build
+      if: matrix.os == 'windows'
+      shell: pwsh
+      run: |
+        cmake --build "${{github.workspace}}\\build" --target install --verbose
 
     - name: Verify portable Windows package
       if: matrix.os == 'windows'
